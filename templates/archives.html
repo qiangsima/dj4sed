@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="posts">
+    {% for news in news_list %}
+        <section class="post">
+            <header class="post-header">
+                <h2 class="post-title"><a href="{% url "detail" timestamp=news.timestamp %}">{{ news.timestamp }}</a></h2>
+
+                    <p class="post-meta">
+                        Time:  <a class="post-author" href="#">{{ news.timestamp}}</a> <a class="post-category post-category-js" href="#">{{ news.total }}</a>
+                    </p>
+            </header>
+        </section>
+    {% endfor %}
+</div><!-- /.blog-post -->
+{% endblock %}

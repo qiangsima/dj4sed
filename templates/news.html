@@ -1,0 +1,25 @@
+# -*-coding: utf-8 -*-
+
+# post.html
+{% extends "base.html" %}
+{% load custom_markdown %} # 新添加的代码
+
+{% block content %}
+<div class="posts">
+        <section class="post">
+            <header class="post-header">
+                <h2 class="post-title">{{ news.timestamp }}</h2>
+
+                    <p class="post-meta">
+                        Time:  <a class="post-author" href="#">{{ news.timestamp}}</a> <a class="post-category post-category-js" href="#">{{ news.total }}</a>
+                    </p>
+            </header>
+
+                <div class="post-description">
+                    <p>
+                        {{ news.words | custom_markdown }}
+                    </p>
+                </div>
+        </section>
+</div><!-- /.blog-post -->
+{% endblock %}
