@@ -22,6 +22,7 @@ from news import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.home),
+    url(r'^(?P<total>\d+)$', views.filter_total),
     url(r'^home$', views.home),
     url(r'^detail/(?P<timestamp>(\d|_)+)/$', views.detail, name='detail'),
     url(r'^archives/$', views.archives, name='archives'),

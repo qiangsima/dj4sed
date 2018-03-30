@@ -11,6 +11,16 @@ from news.models import News
 def detail(request, timestamp):
     try:
         news = News.objects.get(timestamp=str(timestamp))
+        wordDict = {}
+        arr = news.words[1:-1].split(', ')
+        for word in arr:
+            word = word.strip()
+            if word:
+                if word in wordDict:
+                    wordDict[word] += 1
+                else:
+                    wordDict[word] = 1
+        news.wordDict = wordDict
     except News.DoesNotExist:
         raise Http404
     return render(request, 'news.html', {'news': news})
@@ -61,3 +71,17 @@ def search_word(request, word):
     except News.DoesNotExist:
         raise Http404
     return render(request, 'tag.html', {'news_list': news_list})
+
+
+def filter_total(request, total):
+    all_news = News.objects.filter(total__gte=int(total))
+    paginator = Paginator(all_news, 10)
+    page = request.GET.get('page')
+    try:
+        news_list = paginator.page(page)
+    except PageNotAnInteger:
+        news_list = paginator.page(1)
+    except EmptyPage:
+        news_list = paginator.paginator(paginator.num_pages)
+    return render(request, 'home.html', {'news_list': news_list})
+

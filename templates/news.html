@@ -2,7 +2,7 @@
 
 # post.html
 {% extends "base.html" %}
-{% load custom_markdown %} # 新添加的代码
+{% load custom_markdown %} # 添加自定义的filter
 
 {% block content %}
 <div class="posts">
@@ -20,6 +20,91 @@
                         {{ news.words | custom_markdown }}
                     </p>
                 </div>
+                <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                <div id="main" style="width: 50%; height:400px; float: left"></div>
+                <div id="wordcloud" style="width: 50%; height:400px; float: right"></div>
+                <script type="text/javascript">
+                    // 基于准备好的dom，初始化echarts实例
+                    var myChart = echarts.init(document.getElementById('main'));
+
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: '情感分布示意图'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data:['感动','同情','无聊','愤怒','搞笑','悲伤','新奇','温馨'],
+                            left:'right',
+                            orient:'vertical', //horizontal
+                        },
+                        series: [{
+                            type: 'pie',
+                            data: [
+                                {name: '感动', value:{{ news.touching }}},
+                                {name: '同情', value:{{ news.empathy }}},
+                                {name: '无聊', value:{{ news.boredom }}},
+                                {name: '愤怒', value:{{ news.anger }}},
+                                {name: '搞笑', value:{{ news.amusement }}},
+                                {name: '悲伤', value:{{ news.sadness }}},
+                                {name: '新奇', value:{{ news.surprise }}},
+                                {name: '温馨', value:{{ news.warmness }}}
+                            ]
+                        }]
+                    };
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+
+                </script>
         </section>
 </div><!-- /.blog-post -->
+
+    <script>
+    $(function(){
+        echartsCloud();//初始化echarts图
+    })
+    function echartsCloud() {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('wordcloud'));
+
+        myChart.setOption({
+            title: {
+                text: 'echarts3云图展示'
+            },
+            tooltip: {},
+            series: [{
+                type: 'wordCloud',  //类型为字符云
+                shape: 'smooth',  //平滑
+                gridSize: 2, //网格尺寸
+                size: ['80%', '80%'],
+                //sizeRange : [ 50, 100 ],
+                rotationRange: [46, 80], //旋转范围
+                textStyle: {
+                    normal: {
+                        fontFamily: 'sans-serif',
+                        color: function () {
+                            return 'rgb('
+                                + [Math.round(Math.random() * 160),
+                                    Math.round(Math.random() * 160),
+                                    Math.round(Math.random() * 160)]
+                                    .join(',') + ')';
+                            {#var colors = ['#fda67e', '#81cacc', '#cca8ba', "#88cc81", "#82a0c5", '#fddb7e', '#735ba1', '#bda29a', '#6e7074', '#546570', '#c4ccd3'];#}
+                            {#return colors[parseInt(Math.random() * 10)];#}
+                        }
+                    },
+                    emphasis: {
+                        shadowBlur: 5,  //阴影距离
+                        shadowColor: '#333'  //阴影颜色
+                    }
+                },
+                data: [
+                    {% for word, cnt in news.wordDict.items %}
+                    {name:'{{ word }}', value: {{ cnt }} },
+                    {% endfor %}
+                ],
+            }]
+        });
+    }
+    </script>
 {% endblock %}

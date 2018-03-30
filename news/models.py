@@ -15,10 +15,11 @@ class News(models.Model):
     surprise = models.DecimalField(max_digits=10, decimal_places=0)
     warmness = models.DecimalField(max_digits=10, decimal_places=0)
     words = models.TextField(blank=True, null=True)
+    wordDict = {}
 
     def __str__(self):
         return self.timestamp
 
     class Meta:
         ordering = ['-timestamp']
-        db_table = "news"
+        db_table = "news_test"
